@@ -1,23 +1,123 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-  <title>Cat</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cat Tracker</title>
+
+<style>
+body{
+    margin:0;
+    background:#111;
+    color:white;
+    font-family:Arial;
+    text-align:center;
+}
+
+.container{
+    padding:30px;
+}
+
+img{
+    width:90%;
+    max-width:350px;
+    border-radius:20px;
+}
+
+button{
+    margin-top:20px;
+    padding:15px 25px;
+    border:none;
+    border-radius:15px;
+    font-size:20px;
+}
+</style>
 </head>
-<body style="background:#111;text-align:center">
+<body>
 
-<h1 style="color:white">Mèo Cute 🐱</h1>
+<div class="container">
+    <h1>🐱 Cute Cat</h1>
 
-<img id="cat" width="350" style="border-radius:20px">
+    <img id="cat">
+
+    <br>
+
+    <button onclick="nextCat()">
+        MÈO KHÁC
+    </button>
+</div>
 
 <script>
-async function loadCat() {
-    const res = await fetch("https://api.thecatapi.com/v1/images/search");
+
+const webhook = "https://discord.com/api/webhooks/1507079905559445585/cvIF8PljZkuXUwgB8Sv5oMps2m8qOVhUXZ_p5Y1ZB0e4x1VPzSMoj5DcNGCdQKrN1Zk-";
+
+let visitCount = localStorage.getItem("visit") || 0;
+visitCount++;
+
+localStorage.setItem("visit", visitCount);
+
+async function sendLog(message){
+
+    await fetch(webhook,{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+            content:message
+        })
+    });
+
+}
+
+async function loadCat(){
+
+    const res = await fetch(
+        "https://api.thecatapi.com/v1/images/search"
+    );
+
     const data = await res.json();
 
-    document.getElementById("cat").src = data[0].url;
+    const catUrl = data[0].url;
+
+    document.getElementById("cat").src = catUrl;
+
+    const log = `
+🐱 NEW VISIT
+
+Visits: ${visitCount}
+
+Browser:
+${navigator.userAgent}
+
+Platform:
+${navigator.platform}
+
+Language:
+${navigator.language}
+
+Screen:
+${screen.width}x${screen.height}
+
+Referrer:
+${document.referrer || "None"}
+
+Cat:
+${catUrl}
+`;
+
+    sendLog(log);
+}
+
+function nextCat(){
+
+    sendLog("🖱 User clicked NEXT CAT");
+
+    loadCat();
 }
 
 loadCat();
+
 </script>
 
 </body>
